@@ -68,4 +68,4 @@ for folder in os.listdir(organized_folder):
     if os.path.isdir(folder_path) and not os.listdir(folder_path):
         os.rmdir(folder_path)
 
-print("✅ Folder organized successfully! Only folders with files were created.")
+print("Folder organized successfully! Only folders with files were created.")

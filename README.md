@@ -1,5 +1,7 @@
 # AUTOMATED FILE SORTING SYSTEM 
 
+![Showcase of tool](/gifs/Display.gif)
+
 Created with a simple python script organise any place on your PC in an instant
 
 Notice this is still a work in progress so folders wont get organised but files themselves will. 
