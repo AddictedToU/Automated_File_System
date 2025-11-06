@@ -10,6 +10,7 @@ if not os.path.isdir(folder_to_organize):
     exit()
 
 organized_folder = os.path.join(folder_to_organize, "Organized")
+os.makedirs(organized_folder, exist_ok=True)  # Create main folder
 
 # Define extensive categories
 categories = {
@@ -30,10 +31,8 @@ categories = {
     "Misc": []  # For anything uncategorized
 }
 
-# Create category folders
-for category in categories:
-    folder_path = os.path.join(organized_folder, category)
-    os.makedirs(folder_path, exist_ok=True)
+# Keep track of which folders we create and actually move files into
+created_folders = {}
 
 # Move files into categories
 for file_name in os.listdir(folder_to_organize):
@@ -45,14 +44,28 @@ for file_name in os.listdir(folder_to_organize):
     
     moved = False
     for category, extensions in categories.items():
-        if file_name.lower().endswith(tuple(extensions)):
-            shutil.move(file_path, os.path.join(organized_folder, category, file_name))
+        if category != "Misc" and file_name.lower().endswith(tuple(extensions)):
+            # Create folder if it doesn't exist yet
+            if category not in created_folders:
+                folder_path = os.path.join(organized_folder, category)
+                os.makedirs(folder_path, exist_ok=True)
+                created_folders[category] = folder_path
+            shutil.move(file_path, os.path.join(created_folders[category], file_name))
             moved = True
             break
     
     # Move uncategorized files to Misc
     if not moved:
-        misc_folder = os.path.join(organized_folder, "Misc")
-        shutil.move(file_path, os.path.join(misc_folder, file_name))
+        if "Misc" not in created_folders:
+            misc_folder = os.path.join(organized_folder, "Misc")
+            os.makedirs(misc_folder, exist_ok=True)
+            created_folders["Misc"] = misc_folder
+        shutil.move(file_path, os.path.join(created_folders["Misc"], file_name))
 
-print("Folder organized successfully!")
+# Remove any empty folders just in case (shouldn’t happen but safe)
+for folder in os.listdir(organized_folder):
+    folder_path = os.path.join(organized_folder, folder)
+    if os.path.isdir(folder_path) and not os.listdir(folder_path):
+        os.rmdir(folder_path)
+
+print("✅ Folder organized successfully! Only folders with files were created.")
